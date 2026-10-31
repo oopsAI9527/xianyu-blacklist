@@ -4,6 +4,8 @@
 
 ## 网页使用
 
+**[在线打开查询助手](https://yhslgg-arch.github.io/xianyu-blacklist/)**，点击即可搜索，无需下载。
+
 [下载本项目](https://github.com/yhslgg-arch/xianyu-blacklist/archive/refs/heads/main.zip)并解压，双击 **`index.html`** 即可搜索，无需安装。
 
 支持分类筛选、查看详情和导出查询结果，手机也能使用。
