@@ -16,6 +16,24 @@
 - 导出完整数据库、可筛选表格及按领域排列的文字清单。
 - 网页浏览 4272 条资料，支持搜索、19 个领域分类、公司／标签筛选、详情和 CSV 导出，适配手机。
 
+## 界面预览
+
+### 名单浏览与搜索
+
+支持名称搜索、领域分类、公司及风险标签筛选，当前网页版收录 4,272 条记录。
+
+![闲鱼虚拟商品黑名单查询助手：名单浏览与搜索](docs/images/overview.png)
+
+### 查询详情
+
+查看命中名称的关联公司、原文标签和作品登记号，授权状态仍需独立核验。
+
+![查询详情：关联公司与作品登记号](docs/images/detail.png)
+
+### 手机界面
+
+<img src="docs/images/mobile.png" alt="手机端的黑名单浏览与搜索界面" width="360">
+
 ## 直接使用网页版
 
 下载或克隆整个仓库后，双击根目录的 **[index.html](index.html)**。单独保存这一个文件也能使用：页面和词库已内嵌，无需启动服务器，不请求外部资源，不上传搜索词。
@@ -27,7 +45,7 @@
 - 网页说明统一为“来自于网络收集”，不展示具体附件出处，并排除 60 条店铺记录。维护用主数据库保留 4332 条及原始溯源字段；生成网页不会修改主数据库。
 - 搜索和筛选写入当前页面的地址片段，刷新后保留；使用在线版时可直接复制地址分享查询结果。重置即可清除。
 
-项目仓库：[yhslgg-arch/xianyu-virtual-product-blacklist](https://github.com/yhslgg-arch/xianyu-virtual-product-blacklist)。如需部署在线搜索，可在仓库的 **Settings → Pages** 中选择从分支发布，使用 **main / 根目录（root）**。发布成功后，访问 Pages 提供的网址即可在线搜索；仓库根目录已有入口，无需构建服务或后端。
+项目仓库：[yhslgg-arch/xianyu-blacklist](https://github.com/yhslgg-arch/xianyu-blacklist)。如需部署在线搜索，可在仓库的 **Settings → Pages** 中选择从分支发布，使用 **main / 根目录（root）**。发布成功后，访问 Pages 提供的网址即可在线搜索；仓库根目录已有入口，无需构建服务或后端。
 
 网页源文件在 `web/`。修改词库或界面后重新生成入口文件：
 
@@ -49,7 +67,7 @@ python3 scripts/build_web.py --database my-data.json --output my-index.html
 也可直接克隆到 Codex 技能目录（目标目录需尚不存在）：
 
 ```bash
-git clone https://github.com/yhslgg-arch/xianyu-virtual-product-blacklist.git ~/.codex/skills/virtual-product-risk-checker
+git clone https://github.com/yhslgg-arch/xianyu-blacklist.git ~/.codex/skills/virtual-product-risk-checker
 ```
 
 Codex 通常使用 `~/.codex/skills/virtual-product-risk-checker/`，Claude Code 通常使用 `~/.claude/skills/virtual-product-risk-checker/`。若配置了其他技能目录，使用实际目录。重新加载技能后调用：
