@@ -1,0 +1,7 @@
+{
+  "candidates": [
+    {"id": "demo-001", "platform": "闲鱼", "title": "星桥示例课程全套资料", "work_name": "星桥示例课程", "company": "虚构示例教育公司"},
+    {"id": "demo-002", "platform": "小红书", "title": "未收录的虚构素材包", "brand": "虚构示例素材品牌"},
+    {"id": "demo-003", "platform": "淘宝", "title": "星桥示例课程配套笔记"}
+  ]
+}

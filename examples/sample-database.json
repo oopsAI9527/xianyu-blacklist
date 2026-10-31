@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-10-31",
+  "description": "仅供测试的虚构示例",
+  "records": [
+    {
+      "id": "DEMO001",
+      "name": "星桥示例课程",
+      "variants": [
+        "星桥示例课程"
+      ],
+      "category": "教育课程",
+      "object_type": "名称线索",
+      "companies": [
+        "虚构示例教育公司"
+      ],
+      "labels": [
+        "示例待核对"
+      ],
+      "registrations": [],
+      "verification": "unverified",
+      "risk_note": "虚构示例",
+      "sources": [
+        {
+          "document": "sample.csv",
+          "sheet": "CSV",
+          "cell": "A2",
+          "original_name": "星桥示例课程",
+          "label": "示例待核对",
+          "company": "虚构示例教育公司",
+          "registration": ""
+        }
+      ]
+    }
+  ]
+}

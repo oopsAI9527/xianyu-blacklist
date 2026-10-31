@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.venv/
+.DS_Store
+local-data/
+results/
+*.xlsx.inspect.ndjson
+demo.json

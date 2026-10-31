@@ -1,0 +1,4 @@
+interface:
+  display_name: "闲鱼虚拟商品黑名单查询助手"
+  short_description: "接入闲鱼、小红书、淘宝虚拟选品，批量排查课程素材品牌风险并标明授权待核验事项"
+  default_prompt: "请用 $virtual-product-risk-checker 检查这批虚拟产品候选，将名单命中情况、匹配依据与授权待核验事项合并回选品结果。"
