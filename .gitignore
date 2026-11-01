@@ -6,3 +6,6 @@ local-data/
 results/
 *.xlsx.inspect.ndjson
 demo.json
+*_master-带来源-勿公开_*.json
+_backup_原始_*/
+*.bak

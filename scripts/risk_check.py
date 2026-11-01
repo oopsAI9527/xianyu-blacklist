@@ -52,12 +52,17 @@ def load_db(path):
     return data
 
 
+QUERY_FIELDS = ('id', 'name', 'category', 'object_type', 'companies', 'labels', 'registrations')
+
+
 def query_one(db, item, limit=10):
     q = normalize(item)
     if not q:
         raise ValueError('查询名称不能为空')
     matches = []
     for r in db['records']:
+        if r.get('object_type') == '店铺' or r.get('category') == '店铺来源提醒':
+            continue
         names = unique([r['name'], *r.get('variants', [])])
         companies = r.get('companies', [])
         mode, rank, term = '', 99, ''
@@ -77,7 +82,8 @@ def query_one(db, item, limit=10):
                     mode, rank, term = 'partial_candidate', 2, candidate
                     break
         if mode:
-            matches.append((rank, r['name'], dict(r, match_type=mode, matched_term=term)))
+            projected = {k: r[k] for k in QUERY_FIELDS if k in r}
+            matches.append((rank, r['name'], dict(projected, match_type=mode, matched_term=term)))
     matches.sort(key=lambda x: (x[0], normalize(x[1]), x[2]['id']))
     shown = matches[:limit]
     status = 'matched' if matches and matches[0][0] < 2 else 'candidates' if matches else 'no_match'
@@ -104,11 +110,9 @@ def query_markdown(report):
         lines += ['', '## '+md(result['query']), '', result['guidance'], '',
                   f"共 {result['total_matches']} 条，显示 {len(result['matches'])} 条。"]
         for r in result['matches']:
-            lines += ['', f"- {md(r['id'])} {md(r['name'])}：{modes[r['match_type']]}",
+            lines += ['', f"- {md(r['name'])}：{modes[r['match_type']]}",
                       f"  - 领域：{md(r.get('category', '待分类'))}；公司：{md('；'.join(r.get('companies', []))) or '未列示'}",
-                      f"  - 原文标签：{md('；'.join(r.get('labels', []))) or '未列示'}；风险线索：{md(r.get('risk_note', '来源记录，未外部核验'))}"]
-            for s in r.get('sources', []):
-                lines.append('  - 来源：'+md(' / '.join(str(s.get(k, '')) for k in ('document', 'sheet', 'cell'))))
+                      f"  - 风险标签：{md('；'.join(r.get('labels', []))) or '未列示'}"]
     return '\n'.join(lines)+'\n'
 
 
@@ -262,7 +266,7 @@ def build_database(args):
                                     labels=unique([vals.get('label','')]),registrations=unique([vals.get('registration','')]),
                                     verification='unverified',risk_note='用户导入来源记录，未外部核验',sources=[source]))
     if not available:raise ValueError('没有找到可用的表格和名称列；请先运行 inspect')
-    return dict(schema_version=1,updated_at=args.as_of or dt.date.today().isoformat(),description='用户附件导入；原文标签未外部核验',records=merge_records(records),import_warnings=warnings)
+    return dict(schema_version=1,updated_at=args.as_of or dt.date.today().isoformat(),description='用户附件导入；风险标签未外部核验',records=merge_records(records),import_warnings=warnings)
 
 
 def candidate_items(args):
@@ -280,7 +284,7 @@ def candidate_items(args):
     return items
 
 
-EXPORT_HEADERS=['编号','名称','领域','材料对象','关联公司','原文标签','登记号','核验状态','风险线索','来源']
+EXPORT_HEADERS=['编号','名称','领域','材料对象','关联公司','风险标签','登记号','核验状态','风险线索','来源']
 
 
 def export_rows(db):
@@ -296,7 +300,7 @@ def export_markdown(db):
     for r in export_rows(db):groups.setdefault(r[2],[]).append(r)
     lines=['# 虚拟电商选品风险线索','',f"词库日期：{md(db.get('updated_at','未提供'))}。名称数：{len(db['records'])}。",'',CAUTION]
     for category,rows in sorted(groups.items()):
-        lines+=['','## '+md(category),'','| 编号 | 名称 | 公司 | 原文标签 | 来源 |','| --- | --- | --- | --- | --- |']
+        lines+=['','## '+md(category),'','| 编号 | 名称 | 公司 | 风险标签 | 来源 |','| --- | --- | --- | --- | --- |']
         lines+=['| '+' | '.join(md(r[i]) for i in (0,1,4,5,9))+' |' for r in rows]
     return '\n'.join(lines)+'\n'
 

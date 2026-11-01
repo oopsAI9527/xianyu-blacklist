@@ -98,13 +98,12 @@
     $('result-count').textContent = `找到 ${num(results.length)} 条 · 共 ${num(records.length)} 条资料`;
     $('empty-state').hidden = results.length > 0;
     document.querySelector('.table-wrap').hidden = results.length === 0;
-    $('export-button').disabled = results.length === 0;
     const shown = results.slice((state.page-1)*pageSize, state.page*pageSize);
     $('results-body').innerHTML = shown.map(r => {
       const note = r.companies.join('、') || r.object_type || '名称线索';
-      return `<tr><td><button class="record-open" data-record="${esc(r.id)}">${highlight(r.name)}</button><div class="record-subtitle"><span>${esc(r.id)}</span><i class="company-dot"></i><span title="${esc(note)}">${esc(note)}</span></div></td>
+      return `<tr class="record-row" data-record="${esc(r.id)}"><td><button class="record-open" data-record="${esc(r.id)}">${highlight(r.name)}</button><div class="record-subtitle"><span title="${esc(note)}">${esc(note)}</span></div></td>
         <td data-label="产品领域"><span class="category-tag">${esc(r.category)}</span></td>
-        <td data-label="原表风险标签">${r.labels.length ? r.labels.map(label => `<span class="risk-tag${label.includes('登记') ? ' neutral' : ''}">${highlight(label)}</span>`).join('') : `<span class="risk-tag neutral">${r.registrations.length ? '附登记资料' : '待核对线索'}</span>`}</td>
+        <td data-label="风险标签">${r.labels.length ? r.labels.map(label => `<span class="risk-tag${label.includes('登记') ? ' neutral' : ''}">${highlight(label)}</span>`).join('') : `<span class="risk-tag neutral">${r.registrations.length ? '附登记资料' : '待核对线索'}</span>`}</td>
         <td><button class="view-button" data-record="${esc(r.id)}" aria-label="查看${esc(r.name)}详情">${icon('chevron')}</button></td></tr>`;
     }).join('');
     const chips = [];
@@ -130,12 +129,12 @@
   function openDetails(id) {
     const r = byId.get(id);
     if (!r) return;
-    $('detail-meta').textContent = `${r.id} / ${r.object_type || '名称线索'}`;
+    $('detail-meta').textContent = r.object_type || '名称线索';
     $('detail-name').textContent = r.name;
     const field = (title, value) => `<dt>${esc(title)}</dt><dd>${esc(value || '未提供')}</dd>`;
     const related = r.names.filter(name => name !== r.name);
     $('detail-content').innerHTML = `<div class="detail-callout">历史风险线索 · 未外部核验<br>请核对实际内容与转售授权。收录不表示该主体存在违法行为。</div>
-      <dl class="detail-dl">${field('产品领域',r.category)}${field('关联公司',r.companies.join('、'))}${field('原文标签',r.labels.join('；'))}${related.length?field('名称变体',related.join('；')):''}</dl>
+      <dl class="detail-dl">${field('产品领域',r.category)}${field('关联公司',r.companies.join('、'))}${field('风险标签',r.labels.join('；'))}${related.length?field('名称变体',related.join('；')):''}</dl>
       ${r.registrations.length?`<h3 class="detail-section-title">作品登记号 <small>${r.registrations.length}</small></h3><ul class="registration-list">${r.registrations.map(reg => `<li>${esc(reg)}</li>`).join('')}</ul>`:''}`;
     $('detail-dialog').showModal();
     $('detail-dialog').scrollTop = 0;
@@ -146,27 +145,6 @@
     $('toast').textContent = message;
     $('toast').classList.add('visible');
     toastTimer = setTimeout(() => $('toast').classList.remove('visible'), 3500);
-  }
-
-  function exportResults() {
-    if (!results.length) return;
-    const csvCell = value => {
-      let text = String(value ?? '');
-      if (/^[\s]*[=+\-@\t\r]/.test(text)) text = "'"+text;
-      return '"'+text.replace(/"/g,'""')+'"';
-    };
-    const rows = [['编号','名称','产品领域','对象类型','关联公司','原文标签','登记号','核验状态']];
-    for (const r of results) rows.push([r.id,r.name,r.category,r.object_type,r.companies.join('；'),r.labels.join('；'),r.registrations.join('；'),'未外部核验']);
-    const blob = new Blob(['\ufeff'+rows.map(row=>row.map(csvCell).join(',')).join('\r\n')], {type:'text/csv;charset=utf-8'});
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `虚拟选品查询_${updatedAt}_${results.length}条.csv`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    toast(`已导出全部 ${num(results.length)} 条筛选结果`);
   }
 
   function init() {
@@ -183,7 +161,7 @@
     for (const tab of Object.keys(tabNames)) $(`tab-${tab}`).querySelector('span').textContent = num(records.filter(r=>inTab(r,tab)).length);
     document.addEventListener('click', event => {
       const button = event.target.closest('button');
-      if (!button) return;
+      if (!button) { const row = event.target.closest('tr[data-record]'); if (row) openDetails(row.dataset.record); return; }
       if (button.hasAttribute('data-record')) openDetails(button.dataset.record);
       else if (button.hasAttribute('data-category')) {
         update({category:button.dataset.category});
@@ -191,22 +169,21 @@
         $('mobile-categories').setAttribute('aria-expanded','false');
       }
       else if (button.hasAttribute('data-tab')) update({tab:button.dataset.tab});
-      else if (button.hasAttribute('data-example')) update({q:button.dataset.example, exact:false});
+      else if (button.hasAttribute('data-example')) update({q:button.dataset.example, exact:false}, true);
       else if (button.hasAttribute('data-clear')) update({[button.dataset.clear]:defaults[button.dataset.clear]});
       else if (button.hasAttribute('data-page')) update({page:Number(button.dataset.page)},true);
       else if (button.classList.contains('close-dialog')) button.closest('dialog').close();
     });
     document.querySelector('.brand').addEventListener('click',event=>{event.preventDefault();update({...defaults});});
     $('search').addEventListener('input',()=>{clearTimeout(debounce);debounce=setTimeout(()=>update({q:$('search').value.slice(0,500)}),180);});
-    $('search').addEventListener('keydown',event=>{if(event.key==='Enter')update({q:$('search').value.slice(0,500)});});
-    $('search-button').addEventListener('click',()=>update({q:$('search').value.slice(0,500)}));
+    $('search').addEventListener('keydown',event=>{if(event.key==='Enter')update({q:$('search').value.slice(0,500)},true);else if(event.key==='Escape'&&$('search').value){event.preventDefault();$('search').value='';update({q:''});}});
+    $('search-button').addEventListener('click',()=>update({q:$('search').value.slice(0,500)},true));
     $('exact-match').addEventListener('change',()=>update({q:$('search').value.slice(0,500),exact:$('exact-match').checked}));
     for (const key of ['company','label']) $(key+'-filter').addEventListener('change',()=>update({[key]:$(key+'-filter').value}));
     $('sort-order').addEventListener('change',()=>update({sort:$('sort-order').value}));
     for (const id of ['reset-button','empty-reset']) $(id).addEventListener('click',()=>update({...defaults}));
     $('previous-page').addEventListener('click',()=>update({page:state.page-1},true));
     $('next-page').addEventListener('click',()=>update({page:state.page+1},true));
-    $('export-button').addEventListener('click',exportResults);
     for(const id of ['about-button','footer-about']) $(id).addEventListener('click',()=>$('about-dialog').showModal());
     $('mobile-categories').addEventListener('click',()=>{
       const open=document.querySelector('.sidebar').classList.toggle('categories-open');
