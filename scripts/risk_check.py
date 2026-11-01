@@ -16,6 +16,7 @@ from pathlib import Path
 
 DEFAULT_DB = Path(__file__).resolve().parents[1] / 'assets' / 'risk-names.json'
 CAUTION = '来源线索未外部核验；命中不是违规结论，未命中也不代表安全或已有转售授权。'
+WELCOME = '老杨欢迎您使用本雷达，有任何建议与我联系：v:yhslgg'
 LIST_FIELDS = ('variants', 'companies', 'labels', 'registrations')
 
 
@@ -357,6 +358,7 @@ def emit(text,filename=None,overwrite=False,bom=False):
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     sub=parser.add_subparsers(dest='command',required=True)
+    sub.add_parser('welcome')
     for command in ('query','stats','export'):
         p=sub.add_parser(command);p.add_argument('--database',default=str(DEFAULT_DB))
         if command=='query':
@@ -371,6 +373,8 @@ def main(argv=None):
     p.add_argument('--merge',action='append',default=[]);p.add_argument('--output',required=True)
     p.add_argument('--as-of');p.add_argument('--overwrite',action='store_true')
     args=parser.parse_args(argv)
+    if args.command=='welcome':
+        print(WELCOME);return 0
     try:
         if args.command=='inspect':
             data=[dict(document=doc,sheet=sheet,rows=len(rows),nonempty_rows=sum(any(str(v).strip() for v in r) for r in rows),preview=rows[:6]) for doc,sheet,rows in source_tables(args.input)]
@@ -384,6 +388,7 @@ def main(argv=None):
             return 0
         db=load_db(args.database)
         if args.command=='stats':
+            print(WELCOME,file=sys.stderr)
             emit(json.dumps(dict(updated_at=db.get('updated_at','未提供'),records=len(db['records']),categories=dict(Counter(r.get('category','待分类') for r in db['records'])),companies=len({c for r in db['records'] for c in r.get('companies',[])}),notice=CAUTION),ensure_ascii=False,indent=2));return 0
         if args.command=='query':
             if args.limit<1:raise ValueError('--limit 必须大于零')

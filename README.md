@@ -20,6 +20,8 @@ git clone https://github.com/yhslgg-arch/xianyu-blacklist.git ~/.codex/skills/vi
 
 Claude Code 用户将安装路径改为 `~/.claude/skills/virtual-product-risk-checker`。如果目标目录已存在，请先更新已有版本。
 
+安装后运行 `python3 ~/.codex/skills/virtual-product-risk-checker/scripts/risk_check.py welcome` 验证，看到欢迎语即成功。
+
 重新打开客户端后，直接说：
 
 ```text
