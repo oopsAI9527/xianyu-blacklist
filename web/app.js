@@ -494,7 +494,7 @@
       }
       if (button.hasAttribute('data-record')) openDetails(button.dataset.record);
       else if (button.hasAttribute('data-company')) update({company:button.dataset.company, tab:'all', category:''}, true);
-      else if (button.hasAttribute('data-category')) { const c = button.dataset.category; update({category: c && c === state.category ? '' : c}); }  // 再点一次已选领域即取消
+      else if (button.hasAttribute('data-category')) { const c = button.dataset.category; update({category: c && c === state.category ? '' : c, tab: state.tab === 'lint' ? 'all' : state.tab}); }  // 再点一次已选领域即取消；在标题体检页点领域则回到名单浏览
       else if (button.hasAttribute('data-tab')) update({tab:button.dataset.tab});
       else if (button.hasAttribute('data-example')) { state.exact = false; search(button.dataset.example, true); }
       else if (button.id === 'search-button') search($('search').value, true);
