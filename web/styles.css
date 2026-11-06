@@ -520,3 +520,9 @@ body.lint-mode .hero,body.lint-mode .mini,body.lint-mode .link-all{display:none}
 .none .hint{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;margin:12px auto 16px;max-width:620px;background:var(--amb-bg);color:var(--amb-ink);border-radius:10px;padding:12px 16px;font-size:var(--fs-sm)}
 .none .hint b{font-weight:800}
 .none .hint .btn{height:34px}
+
+/* GitHub 链接 */
+.gh{display:inline-flex;align-items:center;gap:6px;color:var(--ink);text-decoration:none;font-weight:600;font-size:var(--fs-sm)}
+.gh:hover{color:var(--acc-ink);text-decoration:underline}
+.gh .icon{width:16px;height:16px;fill:currentColor;stroke:none}
+.foot .gh{font-size:var(--fs-sm)}
