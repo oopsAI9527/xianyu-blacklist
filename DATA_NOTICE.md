@@ -9,3 +9,10 @@ MIT 许可适用于本仓库自行编写的程序、Skill 指令、说明和虚�
 原始材料的来源、准确性与再分发许可应独立核对。发布者也可只发布工具和 `examples/` 的虚构示例，真实名单放入 `.gitignore` 排除的 `local-data/`，通过 `--database` 使用。采用此方式时，默认 `assets/risk-names.json` 也需替换为虚构示例，不能靠 `.gitignore` 隐藏已提交的文件。
 
 更新保留出处、纠错记录和更新时间，不以关键词命中代替实际内容及授权核对。
+
+## 暗语与违禁词表
+
+- `assets/slang-terms.json` 由 `scripts/import_slang.py` 从两个 MIT 许可的开源词典导入：[Domainsun/awesome-chinese-secondhand-slang](https://github.com/Domainsun/awesome-chinese-secondhand-slang) 与 [memos-im/xianyu-slang-helper](https://github.com/memos-im/xianyu-slang-helper)。只收录虚拟商品相关分类与通用交易话术，色情服务、毒品、武器、赌博、盗号洗钱、涉未成年等违法题材整条剔除，灰色题材保留并标注。词条用于识别标题中的拦截词与绕审核写法，不构成对商品合法性的判断。
+- `assets/banned-terms.json` 为本项目整理：广告法常见极限词、售假与版权高频词，以及从本词库“系统稽查／误判”记录提炼的触发词。
+- `assets/pinyin-table.json` 为离线拼音表，仅用于把名称归一化后识别伪装写法。
+

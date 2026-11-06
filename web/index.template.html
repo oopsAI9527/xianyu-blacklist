@@ -3,74 +3,103 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light">
+  <meta name="color-scheme" content="light dark">
   <meta name="description" content="闲鱼虚拟商品版权雷达：选品上架前查询课程、素材、品牌与公司的历史风险名单。闲鱼起家，小红书、淘宝等虚拟商品平台同样适用。支持离线使用。">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
   <title>闲鱼虚拟商品版权雷达</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23212e28'/%3E%3Cpath d='M18 19h28M18 31h17M18 43h12' stroke='%23f9f7ef' stroke-width='5'/%3E%3Ccircle cx='44' cy='43' r='7' fill='%23dc5637'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23c0392b'/%3E%3Ccircle cx='32' cy='32' r='18' fill='none' stroke='%23fff' stroke-width='4'/%3E%3Ccircle cx='32' cy='32' r='8' fill='none' stroke='%23fff' stroke-width='4'/%3E%3Cpath d='M32 32 46 18' stroke='%23fff' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
   <style>/*__STYLES__*/</style>
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true"><defs>
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
-    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
-    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M5 16v4h14v-4"/></symbol>
     <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
-    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
     <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></symbol>
-    <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 3h14v18H5zM9 3v18M13 8h3m-3 4h3"/></symbol>
     <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></symbol>
     <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-radar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/><path d="M12 12l6-6"/></symbol>
   </defs></svg>
 
   <a class="skip-link" href="#search">跳到名单搜索</a>
-  <aside class="sidebar" aria-label="分类导航">
-    <a class="brand" href="#" aria-label="闲鱼虚拟商品版权雷达首页">
-      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><b></b></span>
-      <span>闲鱼版权雷达<small>虚拟产品上架避雷针</small></span>
-    </a>
-    <div class="side-section"><span class="section-label">浏览资料库</span><span class="issue">01 / INDEX</span></div>
-    <button class="all-category active" data-category="" aria-current="true"><span><svg class="icon"><use href="#i-grid"/></svg>全部名单</span><b id="all-count">—</b></button>
-    <div class="category-heading"><span>按产品领域</span><button id="mobile-categories" class="icon-button" aria-label="展开产品分类" aria-expanded="false"><svg class="icon"><use href="#i-menu"/></svg></button></div>
-    <nav id="category-list" class="category-list" aria-label="产品领域"></nav>
-    <div class="sidebar-foot"><span class="archive-label"><svg class="icon"><use href="#i-book"/></svg>数据说明</span><strong id="snapshot-date">—</strong><p>来自于网络收集<br>核对内容，再决定上架</p><button id="about-button" class="text-button">数据与使用说明 <span aria-hidden="true">↗</span></button><p class="author-wechat">作者微信：<b>yhslgg</b></p></div>
-  </aside>
 
-  <main class="main">
-    <header class="topbar"><div class="breadcrumb">选品资料库<span>/</span><strong id="breadcrumb-current">全部名单</strong></div><div class="local-status"><span></span>离线可用</div></header>
-    <section class="intro" aria-labelledby="page-title">
-      <div class="intro-copy"><div class="eyebrow"><span></span> 闲鱼 · 小红书 · 淘宝通用</div><h1 id="page-title">先选品，<br>再避雷<span class="period">。</span></h1><p>课程、素材、品牌与公司名称，集中查找。<br class="desktop-br">闲鱼起家，小红书、淘宝等平台同样适用，上架前多一次风险排查。</p></div>
-      <div class="intro-stat"><div class="stat-overline">已收录名称与关键词</div><div class="stat-number" id="total-stat">—</div><div class="stat-rule"></div><div class="stat-details"><span><b id="category-stat">—</b>产品分组</span><span><b id="company-stat">—</b>公司名称线索</span></div><span class="archive-stamp">LOCAL<br>REFERENCE<br><b>ARCHIVE</b></span></div>
-    </section>
+  <header class="top">
+    <a class="brand" href="#" aria-label="闲鱼虚拟商品版权雷达首页"><span class="mark" aria-hidden="true"><svg><use href="#i-radar"/></svg></span><h1>闲鱼版权雷达</h1><span class="ver">虚拟产品上架避雷针</span></a>
+    <div class="tabs" id="tabs" role="tablist" aria-label="材料类型"><span class="ind" aria-hidden="true"></span>
+      <button role="tab" id="tab-all" data-tab="all" aria-selected="true" class="on">全部名单</button>
+      <button role="tab" id="tab-registered" data-tab="registered" aria-selected="false">登记作品</button>
+      <button role="tab" id="tab-company" data-tab="company" aria-selected="false">公司关联</button>
+      <button role="tab" id="tab-lint" data-tab="lint" aria-selected="false">标题体检</button>
+    </div>
+    <span class="sp"></span>
+    <button class="tbtn" id="theme" title="切换深色 / 浅色">深色</button>
+  </header>
 
-    <div class="context-note"><svg class="icon"><use href="#i-info"/></svg><p>这里收录的是网络收集的历史风险线索，<strong>尚未外部核验</strong>。命中请核对实际内容与授权；未命中也不代表可售。</p></div>
-
-    <section class="workspace" aria-label="查询与筛选">
-      <div class="workspace-tabs" role="tablist" aria-label="材料类型">
-        <button role="tab" id="tab-all" data-tab="all" aria-selected="true" class="tab active">全部名单 <span></span></button>
-        <button role="tab" id="tab-registered" data-tab="registered" aria-selected="false" class="tab">登记作品 <span></span></button>
-        <button role="tab" id="tab-company" data-tab="company" aria-selected="false" class="tab">公司关联 <span></span></button>
+  <div class="wrap">
+    <aside class="side" id="side" aria-label="分类导航">
+      <h4>资料库</h4>
+      <button class="it on" data-category="" aria-current="true"><span><svg class="icon"><use href="#i-grid"/></svg>全部名单</span></button>
+      <h4 class="sec">按产品领域</h4>
+      <nav id="category-list" aria-label="产品领域"></nav>
+      <div class="side-foot">
+        <span class="lab">资料日期</span>
+        <p><span class="d" id="snapshot-date">—</span></p>
+        <p>来自于网络收集，核对内容再决定上架。</p>
+        <p><button id="about-button" class="link">数据与使用说明 ↗</button></p>
+        <p class="wx">作者微信 <b>yhslgg</b></p>
       </div>
-      <div class="search-area">
-        <div class="search-line"><div class="search-box"><svg class="icon"><use href="#i-search"/></svg><label class="sr-only" for="search">搜索名称、公司或关键词</label><input id="search" type="search" placeholder="搜索课程、素材、品牌、公司或关键词…" autocomplete="off" spellcheck="false"><kbd aria-hidden="true">/</kbd></div><button id="search-button" class="primary-button">搜索名单<svg class="icon"><use href="#i-arrow"/></svg></button></div>
-        <div class="search-examples"><span>试试搜索</span><button data-example="粉笔">粉笔</button><button data-example="河南百通">河南百通</button><button data-example="版权售假">版权售假</button><span class="example-divider"></span><label class="exact-label"><input type="checkbox" id="exact-match">仅精确名称／公司</label></div>
-        <div class="filters"><div class="select-wrap"><label for="company-filter">公司</label><select id="company-filter"><option value="">全部公司</option></select></div><div class="select-wrap"><label for="label-filter">标签</label><select id="label-filter"><option value="">全部风险标签</option></select></div><button id="reset-button" class="reset-button">重置筛选</button><div class="filter-spacer"></div></div>
-      </div>
+    </aside>
 
-      <div class="results-heading"><div><h2 id="results-title">全部名单</h2><span id="result-count" role="status" aria-live="polite">正在读取资料…</span></div><label class="sort-label" for="sort-order">排序<select id="sort-order"><option value="default">默认顺序</option><option value="name">名称排序</option></select></label></div>
-      <div id="active-filters" class="active-filters" aria-label="当前筛选条件"></div>
-      <div class="table-wrap"><table class="records-table"><thead><tr><th scope="col">名称 / 关键词</th><th scope="col">产品领域</th><th scope="col">风险标签</th><th scope="col"><span class="sr-only">查看详情</span></th></tr></thead><tbody id="results-body"></tbody></table></div>
-      <div class="empty-state" id="empty-state" hidden><div class="empty-mark"><svg class="icon"><use href="#i-search"/></svg></div><h3>没有找到匹配条目</h3><p>可以缩短名称，或重置筛选再试一次。<br>未收录不代表安全，仍需核对实际商品与转售授权。</p><button class="primary-button" id="empty-reset">重置筛选</button></div>
-      <div class="pagination"><span id="page-description">—</span><div class="page-controls"><button id="previous-page" aria-label="上一页">←</button><div id="page-buttons"></div><button id="next-page" aria-label="下一页">→</button></div></div>
-    </section>
-    <footer class="footer"><span><b>闲鱼虚拟商品版权雷达</b> · 上架前，先核对</span><span>资料日期 <time id="footer-date">—</time><span class="footer-dot">·</span><button id="footer-about">数据说明</button><span class="footer-dot">·</span>作者微信 yhslgg</span></footer>
-    <noscript><p class="noscript-note">请启用 JavaScript 以搜索名单。此页面不连接网络，全部资料保存在本文件中。</p></noscript>
-  </main>
+    <div class="main" id="main">
+      <main class="content">
+        <section class="hero" aria-label="版权查询">
+          <h2 class="hero-t">先选品，再避雷</h2>
+          <p class="hero-p">输入课程名、作者、机构或公司，查它有没有版权风险记录。谐音、拼音、拆写的伪装写法也能认出来。</p>
+          <div class="hs"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><label class="sr-only" for="search">查询名称</label><input id="search" type="search" placeholder="课程名、作者、机构、公司，例如：可复制的领导力" autocomplete="off" spellcheck="false"><kbd aria-hidden="true">/</kbd><button class="btn dark" id="search-button">查版权</button></div>
+          <div class="hs-ex"><span class="try">试试</span><button class="chip" data-example="粉笔">粉笔</button><button class="chip" data-example="樊登读书">樊登读书</button><button class="chip" data-example="可复制的领导力">可复制的领导力</button><button class="chip" data-example="北京昭天下">北京昭天下</button><button class="chip dis-ex" data-example="粉bi课堂">粉bi课堂<small>伪装写法</small></button></div>
+          <p class="hero-note">收录的是网络收集的历史风险线索，未外部核验。命中要核对授权，未命中也不代表可售。</p>
+        </section>
 
-  <dialog id="detail-dialog" class="detail-dialog" aria-labelledby="detail-name"><div class="dialog-top"><span id="detail-meta" class="eyebrow"></span><button class="icon-button close-dialog" aria-label="关闭详情"><svg class="icon"><use href="#i-close"/></svg></button></div><div class="dialog-body"><h2 id="detail-name"></h2><div id="detail-content"></div></div></dialog>
-  <dialog id="about-dialog" class="about-dialog" aria-labelledby="about-title"><div class="dialog-top"><span class="eyebrow">ABOUT THIS INDEX</span><button class="icon-button close-dialog" aria-label="关闭数据说明"><svg class="icon"><use href="#i-close"/></svg></button></div><div class="dialog-body"><h2 id="about-title">数据与使用说明</h2><p>数据来自于网络收集，供虚拟电商选品排查参考。</p><dl class="about-list"><dt>词库日期</dt><dd id="about-date"></dd><dt>核验状态</dt><dd>未进行外部核验。风险标签不是当前平台规则，作品登记资料也不等于已核实的权利状态。</dd><dt>匹配方式</dt><dd>搜索涵盖名称、变体、公司、领域、标签与登记号。多个空格分隔的词需同时出现。“仅精确名称／公司”只比较完整名称与公司名，不做同音或简称推断。</dd><dt>分类口径</dt><dd>产品领域依据名称信息初分。信息不足的人名和简称标记为“领域待补充”。</dd><dt>数据边界</dt><dd>名单命中只提供核对线索。公司或个人被收录，不表示其存在违法行为。转售前应核对实际内容和授权。</dd><dt>本地使用</dt><dd>页面无需联网，不上传搜索词，不使用统计脚本。全部查询在本地完成。</dd><dt>许可说明</dt><dd>程序与界面采用 MIT 许可。真实名单的再分发许可需独立核对，不自动适用程序许可。</dd></dl></div></dialog>
+        <div class="sec-head"><h2 id="results-title">全部名单</h2><div class="mini" id="mini-stats"></div><button class="link-all" id="all-stats">全部数据</button></div>
+
+        <section class="lint-pane" id="lint-pane" aria-label="标题体检">
+          <div class="lint-box"><label for="lint-text" class="lab">粘贴商品标题或详情（本地扫描，不上传）</label><textarea id="lint-text" rows="4" maxlength="500" placeholder="例如：粉bi公考全套网盘秒发 克劳德代充" spellcheck="false"></textarea>
+            <div class="lint-actions"><button class="btn dark" id="lint-button">体检</button><button class="btn" id="lint-clear">清空</button><span class="try">试试</span><button class="chip" data-lint-example="粉bi公考全套网盘秒发 克劳德代充">粉bi公考全套网盘秒发</button><button class="chip" data-lint-example="可复制的领导力 樊登读书 永久更新 无水印">樊登读书 永久更新</button><span class="n">⌘/Ctrl + Enter 也可体检</span></div></div>
+          <div id="lint-result"></div>
+        </section>
+
+        <div class="bar">
+          <label for="company-filter" class="sr-only">公司</label><select id="company-filter"><option value="">全部公司</option></select>
+          <label for="label-filter" class="sr-only">标签</label><select id="label-filter"><option value="">全部风险标签</option></select>
+          <label><input type="checkbox" id="exact-match">仅精确名称／公司</label>
+          <button id="reset-button" class="reset">重置</button>
+          <span class="n" id="result-count" role="status" aria-live="polite">正在读取资料…</span>
+        </div>
+        <div id="active-filters" class="active-filters" aria-label="当前筛选条件"></div>
+
+        <div class="tbl" id="table-wrap"><table class="records-table"><thead><tr>
+          <th scope="col" class="sortable" data-sort="name">名称 / 关键词<span class="ar">▼</span></th>
+          <th scope="col" class="c-cat">产品领域</th>
+          <th scope="col">风险标签</th>
+          <th scope="col" class="num c-reg">登记号</th>
+          <th scope="col" class="c-go"><span class="sr-only">查看详情</span></th>
+        </tr></thead><tbody id="results-body"></tbody></table></div>
+        <div class="none" id="empty-state" hidden><b>没有找到匹配条目</b><div class="hint" id="empty-hint" hidden></div><p>可以缩短名称，或重置筛选再试一次。<br>未收录不代表安全，仍需核对实际商品与转售授权。</p><div class="card green" id="empty-advice"></div><button class="btn dark" id="empty-reset">重置筛选</button></div>
+        <div class="pg"><span class="desc" id="page-description">—</span><button id="previous-page" aria-label="上一页">←</button><div id="page-buttons"></div><button id="next-page" aria-label="下一页">→</button></div>
+
+        <footer class="foot"><span><b>闲鱼虚拟商品版权雷达</b> · 上架前，先核对</span><span>资料日期 <time id="footer-date">—</time><span class="dot">·</span><button id="footer-about">数据说明</button><span class="dot">·</span>作者微信 yhslgg</span></footer>
+        <noscript><p class="noscript-note">请启用 JavaScript 以搜索名单。此页面不连接网络，全部资料保存在本文件中。</p></noscript>
+      </main>
+      <aside class="det" id="det" aria-label="名单详情"></aside>
+    </div>
+  </div>
+
+  <dialog id="about-dialog" class="about-dialog" aria-labelledby="about-title"><div class="dialog-top"><span class="lab">ABOUT THIS INDEX</span><button class="x close-dialog btn" aria-label="关闭数据说明"><svg class="icon"><use href="#i-close"/></svg></button></div><div class="dialog-body"><h2 id="about-title">数据与使用说明</h2><p>数据来自于网络收集，供虚拟电商选品排查参考。</p><dl class="about-list"><dt>词库日期</dt><dd id="about-date"></dd><dt>词库规模</dt><dd id="about-scale"></dd><dt>核验状态</dt><dd>未进行外部核验。风险标签不是当前平台规则，作品登记资料也不等于已核实的权利状态。</dd><dt>匹配方式</dt><dd>搜索涵盖名称、变体、公司、领域、标签与登记号。多个空格分隔的词需同时出现。“仅精确名称／公司”只比较完整名称与公司名，不做同音或简称推断。</dd><dt>分类口径</dt><dd>产品领域依据名称信息初分。信息不足的人名和简称标记为“领域待补充”。</dd><dt>数据边界</dt><dd>名单命中只提供核对线索。公司或个人被收录，不表示其存在违法行为。转售前应核对实际内容和授权。</dd><dt>伪装识别</dt><dd>搜索与标题体检会把输入和名单都归一化为拼音与首字母再比对，识别谐音、拼音、拆字与中英混写。疑似伪装命中是候选，不是结论。</dd><dt>标题体检</dt><dd>按本地词表扫描版权名、平台暗语与违禁词，给出改写建议；不是过审保证，高危题材不提供替代词。暗语词条来自两个 MIT 开源词典，只收录虚拟商品相关分类并剔除违法题材。</dd><dt>处置建议</dt><dd>详情中的“运营处置建议”由本地规则表按命中状态、产品领域与风险标签合成，是经营思路，不是法律结论。</dd><dt>本地使用</dt><dd>页面无需联网，不上传搜索词，不使用统计脚本。全部查询在本地完成。</dd><dt>许可说明</dt><dd>程序与界面采用 MIT 许可。真实名单的再分发许可需独立核对，不自动适用程序许可。</dd></dl></div></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script id="risk-data" type="application/json">/*__DATABASE__*/</script>
+  <script id="handling-rules" type="application/json">/*__RULES__*/</script>
+  <script id="slang-terms" type="application/json">/*__SLANG__*/</script>
+  <script id="banned-terms" type="application/json">/*__BANNED__*/</script>
+  <script id="pinyin-table" type="application/json">/*__PINYIN__*/</script>
   <script>/*__APP__*/</script>
 </body>
 </html>

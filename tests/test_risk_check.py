@@ -147,3 +147,32 @@ class RiskTests(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
+
+class HandlingTests(unittest.TestCase):
+    def setUp(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('handling', ROOT / 'scripts/handling.py')
+        self.h = importlib.util.module_from_spec(spec); spec.loader.exec_module(self.h)
+
+    def test_levels_follow_status_and_labels(self):
+        red = self.h.advise('matched', {'category':'商业管理与通识成长', 'labels':['售假'], 'object_type':'版权词／人物机构'})
+        self.assertEqual((red['level'], red['score']), ('red', 80))
+        self.assertTrue(any('售假' in m for m in red['meaning']))
+        self.assertIn('闲鱼', red['platforms'])
+        amber = self.h.advise('candidates', {'category':'未知领域', 'labels':['售假']})
+        self.assertEqual(amber['level'], 'amber')
+        self.assertTrue(amber['actions'][0].startswith('名字像不等于同一个'))
+        green = self.h.advise('no_match')
+        self.assertEqual((green['level'], green['score'], green['platforms'], green['meaning']), ('green', 10, {}, []))
+        registered = self.h.advise('matched', {'category':'设计素材与字体', 'registrations':['X-1']})
+        self.assertEqual(registered['level'], 'red')
+        self.assertTrue(any('登记' in m for m in registered['meaning']))
+
+    def test_query_and_markdown_include_handling(self):
+        db = rc.load_db(ROOT / 'examples/sample-database.json')
+        result = rc.query_one(db, '未收录的虚构商品')
+        self.assertEqual(result['handling']['level'], 'green')
+        text = rc.query_markdown(dict(updated_at='2026-01-01', results=[result]))
+        self.assertIn('运营处置建议', text)
+        self.assertIn('绿灯', text)

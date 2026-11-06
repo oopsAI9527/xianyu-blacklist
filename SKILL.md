@@ -49,6 +49,40 @@ python3 <skill-dir>/scripts/risk_check.py query --input candidates.csv --field �
 
 简短输出每个候选的命中状态、匹配方式、重要匹配条目、授权待核验状态和下一步核对事项，标明“数据来自于网络收集”和词库日期。公开数据已移除全部来源出处与店铺记录，查询结果不含来源编号或附件位置；完整出处仅保留在作者本地的维护主库。保留原始名称，不把相似度当作违规概率。脚本本身不检查授权文件，也不会返回版权已通过或可售结论。
 
+## 伪装名识别
+
+查询与网页搜索会把输入和名单都归一化为无声调全拼与拼音首字母后再比对（拼音表在 `assets/pinyin-table.json`，由 `scripts/gen_pinyin_table.py` 离线生成，运行时不依赖第三方库），因此能识别谐音、拼音、首字母、拆字插符号与中英混写：粉bi课堂、fenbi课堂、粉 笔 课 堂、fbkt 都指向“粉笔课堂”。
+
+- 结果以 `match_type: disguised_candidate`（疑似伪装命中）作为第四档，排在部分匹配之后；查询 `status` 相应多一档 `disguised`，排在 `candidates` 之后、`no_match` 之前，批量接口的 `list_status` 与 `summary` 同样增加该档。
+- 防误伤规则：全拼比对要求至少 4 个音节；首字母比对要求至少 3 个字母且与名称首字母完全一致；中英混写的短名（如“粉bi”）允许 2 个音节；两字符及更短不做伪装匹配。纯汉字同音替换的短名不会命中。
+- 口径：疑似伪装命中是候选不是结论，先按正写名称复查；也不要用改写名去规避，平台稽查同样识别变体。处置卡按候选口径合成，并注明输入疑似为伪装写法。
+
+## 标题体检
+
+对整条标题或详情做扫描，而不是只查一个名称：
+
+```bash
+python3 <skill-dir>/scripts/risk_check.py lint --text "粉bi公考全套网盘秒发 克劳德代充" --format markdown
+python3 <skill-dir>/scripts/risk_check.py lint --input titles.txt --format json --output lint.json
+```
+
+每条结果含 `level`（red / amber / green）、`reasons`、`counts`、`hits` 与 `handling`。`hits` 按出现位置排序，`kind` 分三类：
+
+- `copyright`：命中版权名单的片段，`match_type` 为精确名称、公司关联或疑似伪装；`advice` 给出去掉名称后的描述性替代（取该领域处置规则的替代方向）。
+- `slang`：命中 `assets/slang-terms.json` 的暗语变体，带标准名、`liveness`（killed 为拦截词、watching 为抽检、active 为可搜）、`risk`、释义与接替词。只有风险为 safe / warning 的词才给接替词；danger 与灰色题材一律只提示不给词。
+- `banned`：命中 `assets/banned-terms.json` 的广告法极限词、售假与版权高频词、系统稽查触发词；极限词建议删除或改具体数据，售假词给改写方向，稽查词只提示。
+
+评级规则：版权精确命中、拦截词、高危暗语或售假高频词任一出现即红灯；其余命中为黄灯；无命中为绿灯。处置卡取最严重的版权命中记录合成。批量接口对带 `title` 的候选自动体检，结果放在 `lint` 字段（只含片段判定与等级）。体检给的是改写建议，不是过审保证；暗语词条来自两个 MIT 开源词典，只收录虚拟商品相关分类并剔除违法题材，用 `scripts/import_slang.py` 可重新导入。
+
+## 运营处置建议
+
+查询结果附带 `handling` 字段（Markdown 输出中为“运营处置建议”小节），由 `assets/handling-rules.json` 按“命中状态 × 产品领域 × 风险标签”在本地合成，不联网、不用模型。字段含义：
+
+- `level` 与 `score`：red / amber / green 三档和 0 到 100 的风险分。精确命中加标签权重进红档，部分匹配通常为黄档，未命中为绿档。
+- `meaning`：命中标签在经营上意味着什么；`actions`：按领域给出的可行做法，先列标签对应的处置，再列该领域的改造形态；`docs`：上架前要拿到的凭证；`alternatives`：可替代的方向；`platforms`：闲鱼、小红书、淘宝的类目提示；`checklist`：合规四查。
+- 向用户汇报时把它表述为“运营处置建议”，不是法律结论，也不改变“命中是线索、授权待核验”的口径。批量接口 `screen_products.py` 对每个候选同样返回 `handling`，取该候选最高优先级状态下的首条命中记录合成。
+- 规则表可直接编辑：`label_groups` 按标签关键词分组并给权重，`categories` 按产品领域写做法、凭证与替代方向，`platform_notes` 按类目组写平台提示。改完无需重新构建即可生效；网页需运行 `build_web.py` 重新内嵌。
+
 ## 导入或更新
 
 读取 [references/importing.md](references/importing.md) 后，为用户明确指定列进行字段映射，再运行 `build` 子命令。支持 CSV、TSV、XLSX、XLSM 以及已导出的静态 HTML 表格；不执行宏、公式、网页脚本，不跟随外链。

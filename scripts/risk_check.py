@@ -14,6 +14,10 @@ from collections import Counter, OrderedDict
 from html.parser import HTMLParser
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import handling  # noqa: E402  运营处置建议（纯本地规则表）
+import disguise  # noqa: E402  伪装名识别（拼音归一化）
+
 DEFAULT_DB = Path(__file__).resolve().parents[1] / 'assets' / 'risk-names.json'
 CAUTION = '来源线索未外部核验；命中不是违规结论，未命中也不代表安全或已有转售授权。'
 WELCOME = '老杨欢迎您使用本雷达，有任何建议与我联系：v:yhslgg'
@@ -56,6 +60,17 @@ def load_db(path):
 QUERY_FIELDS = ('id', 'name', 'category', 'object_type', 'companies', 'labels', 'registrations')
 
 
+_DISGUISE_INDEX = {}
+
+
+def disguise_index(db):
+    key = id(db)
+    if key not in _DISGUISE_INDEX:
+        _DISGUISE_INDEX[key] = disguise.index_records(
+            [r for r in db['records'] if r.get('object_type') != '店铺' and r.get('category') != '店铺来源提醒'])
+    return _DISGUISE_INDEX[key]
+
+
 def query_one(db, item, limit=10):
     q = normalize(item)
     if not q:
@@ -85,14 +100,23 @@ def query_one(db, item, limit=10):
         if mode:
             projected = {k: r[k] for k in QUERY_FIELDS if k in r}
             matches.append((rank, r['name'], dict(projected, match_type=mode, matched_term=term)))
+    found = {m[2]['id'] for m in matches}
+    for r, term in disguise.find_disguised(item, disguise_index(db)):
+        if r['id'] in found:
+            continue
+        projected = {k: r[k] for k in QUERY_FIELDS if k in r}
+        matches.append((3, r['name'], dict(projected, match_type='disguised_candidate', matched_term=term)))
     matches.sort(key=lambda x: (x[0], normalize(x[1]), x[2]['id']))
     shown = matches[:limit]
-    status = 'matched' if matches and matches[0][0] < 2 else 'candidates' if matches else 'no_match'
+    top = matches[0][0] if matches else 99
+    status = 'matched' if top < 2 else 'candidates' if top == 2 else 'disguised' if top == 3 else 'no_match'
     guidance = ('发现名称或明确公司关联，核对实际内容和转售授权。' if status == 'matched'
                 else '发现部分匹配候选，先确认是否为同一主体或作品。' if status == 'candidates'
+                else '输入疑似为某个风险名称的伪装写法（谐音、拼音或拆写），先按正写名称复查。' if status == 'disguised'
                 else '本地词库未收录该名称，仍需核对实际内容、来源及授权。')
+    best = shown[0][2] if shown else None
     return dict(query=item, status=status, total_matches=len(matches), truncated=len(matches)>len(shown),
-                matches=[x[2] for x in shown], guidance=guidance)
+                matches=[x[2] for x in shown], guidance=guidance, handling=handling.advise(status, best))
 
 
 def safe_sheet_cell(v):
@@ -106,14 +130,16 @@ def md(text):
 
 def query_markdown(report):
     lines = ['# 选品名单查询', '', f"词库日期：{md(report['updated_at'])}", '', CAUTION]
-    modes = {'exact_name':'名称精确命中', 'exact_company':'公司精确关联', 'partial_candidate':'部分匹配候选'}
+    modes = {'exact_name':'名称精确命中', 'exact_company':'公司精确关联', 'partial_candidate':'部分匹配候选', 'disguised_candidate':'疑似伪装命中'}
     for result in report['results']:
         lines += ['', '## '+md(result['query']), '', result['guidance'], '',
                   f"共 {result['total_matches']} 条，显示 {len(result['matches'])} 条。"]
         for r in result['matches']:
-            lines += ['', f"- {md(r['name'])}：{modes[r['match_type']]}",
+            lines += ['', f"- {md(r['name'])}：{modes[r['match_type']]}" + (f"（输入对应 {md(r.get('matched_term',''))}）" if r['match_type']=='disguised_candidate' else ''),
                       f"  - 领域：{md(r.get('category', '待分类'))}；公司：{md('；'.join(r.get('companies', []))) or '未列示'}",
                       f"  - 风险标签：{md('；'.join(r.get('labels', []))) or '未列示'}"]
+        if result.get('handling'):
+            lines += ['', '### 运营处置建议', '', handling.markdown(result['handling'])]
     return '\n'.join(lines)+'\n'
 
 
@@ -359,6 +385,8 @@ def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     sub=parser.add_subparsers(dest='command',required=True)
     sub.add_parser('welcome')
+    p=sub.add_parser('lint');p.add_argument('--text',action='append',default=[]);p.add_argument('--input');p.add_argument('--database',default=str(DEFAULT_DB))
+    p.add_argument('--format',choices=['json','markdown'],default='json');p.add_argument('--output');p.add_argument('--overwrite',action='store_true')
     for command in ('query','stats','export'):
         p=sub.add_parser(command);p.add_argument('--database',default=str(DEFAULT_DB))
         if command=='query':
@@ -387,6 +415,14 @@ def main(argv=None):
             for warning in data['import_warnings']:print('跳过：'+warning,file=sys.stderr)
             return 0
         db=load_db(args.database)
+        if args.command=='lint':
+            import lint_listing
+            texts=list(args.text)
+            if args.input:texts+=[t for t in Path(args.input).read_text(encoding='utf-8-sig').splitlines() if t.strip()]
+            if not texts:raise ValueError('请用 --text 或 --input 提供标题或详情文本')
+            report=dict(updated_at=db.get('updated_at','未提供'),notice=lint_listing.NOTICE,results=[lint_listing.lint(db,t) for t in texts])
+            text=lint_listing.markdown(report) if args.format=='markdown' else json.dumps(report,ensure_ascii=False,indent=2)+'\n'
+            emit(text,args.output,args.overwrite);return 0
         if args.command=='stats':
             print(WELCOME,file=sys.stderr)
             emit(json.dumps(dict(updated_at=db.get('updated_at','未提供'),records=len(db['records']),categories=dict(Counter(r.get('category','待分类') for r in db['records'])),companies=len({c for r in db['records'] for c in r.get('companies',[])}),notice=CAUTION),ensure_ascii=False,indent=2));return 0

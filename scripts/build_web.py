@@ -30,9 +30,17 @@ def render(root=ROOT, database=None):
     # JSON is inert, including records that contain literal HTML closing tags.
     payload = payload.replace('&', '\\u0026').replace('<', '\\u003c').replace('>', '\\u003e')
     payload = payload.replace('\u2028', '\\u2028').replace('\u2029', '\\u2029')
+    def inert(name):
+        text = json.dumps(json.loads((root / 'assets' / name).read_text(encoding='utf-8')), ensure_ascii=False, separators=(',', ':'))
+        return text.replace('&', '\\u0026').replace('<', '\\u003c').replace('>', '\\u003e').replace('\u2028', '\\u2028').replace('\u2029', '\\u2029')
+    rules = inert('handling-rules.json')
     parts = {
         '/*__STYLES__*/': (root / 'web/styles.css').read_text(encoding='utf-8'),
         '/*__DATABASE__*/': payload,
+        '/*__RULES__*/': rules,
+        '/*__SLANG__*/': inert('slang-terms.json'),
+        '/*__BANNED__*/': inert('banned-terms.json'),
+        '/*__PINYIN__*/': inert('pinyin-table.json'),
         '/*__APP__*/': (root / 'web/app.js').read_text(encoding='utf-8'),
     }
     template = (root / 'web/index.template.html').read_text(encoding='utf-8')
@@ -41,7 +49,7 @@ def render(root=ROOT, database=None):
             raise ValueError(f'Expected exactly one placeholder: {marker}')
     # One-pass replacement: data cannot introduce a second template expansion.
     import re
-    return re.sub(r'/\*__(?:STYLES|DATABASE|APP)__\*/', lambda m: parts[m[0]], template)
+    return re.sub(r'/\*__(?:STYLES|DATABASE|RULES|SLANG|BANNED|PINYIN|APP)__\*/', lambda m: parts[m[0]], template)
 
 
 def main():

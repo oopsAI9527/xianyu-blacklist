@@ -58,17 +58,22 @@ checks_by_id = {item["candidate"]["id"]: item for item in report["results"]}
 
 ## 输出与回填
 
-报告含 `schema_version`、`updated_at`、`origin`、`notice`、`summary` 和 `results`。`summary` 固定包含 `total`、`matched`、`candidates`、`no_match` 数量。每个结果包含原候选字段、逐字段 `checks` 和：
+报告含 `schema_version`、`updated_at`、`origin`、`notice`、`summary` 和 `results`。`summary` 固定包含 `total`、`matched`、`candidates`、`disguised`、`no_match` 数量。每个结果包含原候选字段、逐字段 `checks` 和：
 
 | 字段与值 | 意义及处理 |
 | --- | --- |
 | `list_status: matched` | 至少一个字段精确命中名称或明确公司关联；`suggested_action: review_rights`，优先核对具体作品和授权 |
 | `list_status: candidates` | 只有部分匹配；`suggested_action: confirm_identity`，先确认是否同一作品或主体 |
+| `list_status: disguised` | 字段疑似为风险名称的伪装写法（谐音、拼音、首字母或拆写）；`suggested_action: confirm_identity`，先按正写名称复查 |
 | `list_status: no_match` | 查询字段均未命中；`suggested_action: check_authorization`，仍需核对授权 |
 | `copyright_status: unverified` | 本接口没有核实版权归属，所有结果均如此 |
 | `authorization_status: needs_verification` | 本接口没有核实销售或转售授权，所有结果均如此 |
 
-`checks` 每项含 `field`、`query`、`status`、`total_matches`、`truncated`、`matches`。精确名称 `exact_name`、公司关联 `exact_company` 和部分匹配 `partial_candidate` 分别标明。聚合状态按精确命中、部分候选、未命中的顺序取最高优先级；不能把公司关联当成该公司全部作品均不可售。
+候选带 `title` 时每个结果另含 `lint`：对标题整条做的体检摘要（`level`、`reasons`、`counts`、`hits`），`hits` 每项含片段、类别（copyright / slang / banned）与建议；体检是改写建议，不是过审保证。没有标题时为 `null`。
+
+每个结果另含 `handling`：本地规则表合成的运营处置建议（`level`、`score`、`headline`、`meaning`、`actions`、`docs`、`alternatives`、`platforms`、`checklist`、`notice`），取该候选最高优先级状态下的首条命中记录生成；合并回选品表时可只取 `level` 与 `actions`。它是经营思路，不是法律结论。
+
+`checks` 每项含 `field`、`query`、`status`、`total_matches`、`truncated`、`matches`。精确名称 `exact_name`、公司关联 `exact_company`、部分匹配 `partial_candidate` 和疑似伪装 `disguised_candidate` 分别标明。聚合状态按精确命中、部分候选、未命中的顺序取最高优先级；不能把公司关联当成该公司全部作品均不可售。
 
 `--limit` 默认为每字段最多 10 条。总命中数不受此限制；`truncated: true` 时提高限制或使用更具体的作品名复查，不把截断结果当成完整清单。各字段可能命中同一记录；展示时可按记录 id 去重，同时保留命中的字段和匹配方式。
 

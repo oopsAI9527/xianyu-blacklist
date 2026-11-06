@@ -37,7 +37,7 @@ class SelectionIntegrationTests(unittest.TestCase):
         self.assertEqual(item['suggested_action'], 'review_rights')
         self.assertEqual([c['matches'][0]['match_type'] for c in item['checks']],
                          ['partial_candidate', 'exact_name', 'exact_company'])
-        self.assertEqual(result['summary'], {'total':1, 'matched':1, 'candidates':0, 'no_match':0})
+        self.assertEqual(result['summary'], {'total':1, 'matched':1, 'candidates':0, 'disguised':0, 'no_match':0})
 
     def test_brand_and_author_are_separate_search_fields(self):
         result = screen.screen(self.db, [{'title':'通用商品标题', 'brand':'星桥示例课程',
