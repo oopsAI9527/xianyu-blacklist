@@ -26,7 +26,7 @@ screen = load('screen_products')
 SAMPLE = {'schema_version': 1, 'updated_at': '2026-01-01', 'records': [
     {'id': 'T1', 'name': '粉笔课堂', 'category': '公考考证与职业考试', 'object_type': '版权词／人物机构', 'labels': ['售假']},
     {'id': 'T2', 'name': '可复制的领导力', 'category': '商业管理与通识成长', 'object_type': '版权词／人物机构', 'labels': ['售假']},
-    {'id': 'T3', 'name': '星桥示例课程', 'category': '教育课程（领域待补充）', 'companies': ['虚构示例教育公司']},
+    {'id': 'T3', 'name': '星桥示例课程', 'category': '教育课程', 'companies': ['虚构示例教育公司']},
     {'id': 'T4', 'name': '粉笔', 'category': '公考考证与职业考试', 'object_type': '版权词／人物机构'},
 ]}
 

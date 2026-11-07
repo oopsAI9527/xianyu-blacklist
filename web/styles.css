@@ -87,7 +87,6 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,[t
 .it>span .icon{width:15px;height:15px;opacity:.75}
 .it i{font-style:normal;color:var(--mute);font-size:var(--fs-xs);font-family:var(--mono);font-variant-numeric:tabular-nums;background:var(--panel2);padding:1px 7px;border-radius:999px;min-width:28px;text-align:center;flex-shrink:0}
 .it.on i{color:#fff;background:rgba(255,255,255,.22)}
-.it.pending{color:var(--mute)}
 .side-foot{margin-top:auto;padding:16px 10px 0;border-top:1px solid var(--line);font-size:var(--fs-sm);color:var(--mute);line-height:1.6}
 .side-foot .d{font-family:var(--mono);color:var(--ink2);font-weight:600;font-size:var(--fs-sm)}
 .side-foot p{margin:6px 0}

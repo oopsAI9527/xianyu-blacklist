@@ -476,7 +476,7 @@
     $('about-scale').textContent = `${num(records.length)} 条名称与关键词 · ${categories.length} 个产品领域 · ${num(companyNames.length)} 个公司名称线索 · ${num(records.filter(r => r.registrations.length).length)} 条附作品登记资料 · 暗语与违禁词 ${num(SLANG.terms.length + BANNED.terms.length)} 条`;
     $('all-stats').addEventListener('click', () => $('about-dialog').showModal());
     for (const id of ['snapshot-date','footer-date','about-date']) $(id).textContent = updatedAt;
-    $('category-list').innerHTML = categories.map(category=>`<button class="it${category.includes('待')?' pending':''}" data-category="${esc(category)}"><span>${esc(category)}</span></button>`).join('');
+    $('category-list').innerHTML = categories.map(category=>`<button class="it" data-category="${esc(category)}"><span>${esc(category)}</span></button>`).join('');
     for (const [id, values] of [['company-filter',companies],['label-filter',labels]]) {
       $(id).insertAdjacentHTML('beforeend', values.map(value=>`<option value="${esc(value)}">${esc(value)}</option>`).join(''));
     }
